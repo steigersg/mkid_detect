@@ -35,8 +35,7 @@ class MKIDDetect:
 
         tlist += N * np.random.rand(len(tlist))
 
-        #keep = remove_deadtime(tlist) # write in C
-        keep = [int(t) for t in tlist]
+        keep = remove_deadtime(tlist, dead_time=self.dead_time)
 
         return keep
 
