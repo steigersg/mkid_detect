@@ -19,17 +19,37 @@ class MKIDDetect:
         self.taufac = 500
 
     def get_photon_wavelengths(self, true_wvl, R, size):
+        """
+        Generates a wavelength for a number of photons given the true
+        wavelength that those photons should have and the energy reosltuion of
+        your pixel.
+
+        Parameters
+        ----------
+        true_wvl: float
+            The true wavelength of the photon (in nm)
+        R: float
+            The energy resolution to use.
+        size: int
+            How many draws to make from the normal distribution defined by R.
+
+        Returns
+        -------
+
+        """
         del_E = true_wvl / R
         return np.random.normal(loc=true_wvl, scale=del_E, size=size)
 
-    def get_photon_arrival_times(self, I, exp_time):
+    def get_photon_arrival_times(self, flux, exp_time):
+        # this is the easest thing to do (poisson), can later implement other
+        # arrival time statistics, i.e. MR
         # exp_time is in seconds
-        # I is in photons/s
+        # flux is in photons/s
 
         N = max(int(self.tau * 1e6 / self.taufac), 1)
         # generate discretize time bins for constant background
         t = np.arange(0, int(exp_time * 1e6), N)
-        n = np.random.poisson(np.ones(t.shape) * I / 1e6 * N)
+        n = np.random.poisson(np.ones(t.shape) * flux / 1e6 * N)
 
         tlist = t[n > 0] * 1.
 
