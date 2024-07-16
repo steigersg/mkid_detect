@@ -1,11 +1,10 @@
 from tables import *
 
-
 class Photon(IsDescription):
     x = UInt16Col()
     y = UInt16Col()
     wavelength = Float64Col()
-    time = Float64Col()
+    time = UInt16Col()
 
 
 class PhotonList:
