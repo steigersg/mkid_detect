@@ -20,13 +20,16 @@ class PhotonList:
 
         self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
 
-    def add_photon(self, x, y, wavelength, time):
-        photon = self.table.row
-        photon["x"] = x
-        photon["y"] = y
-        photon["wavelength"] = wavelength
-        photon["time"] = time
-        photon.append()
+    def add_photons(self, x, y, wavelengths, times):
+        # TODO figure out a way that this isn't unfathomably slow
+        for i, time in enumerate(times):
+            photon = self.table.row
+            photon["x"] = x
+            photon["y"] = y
+            photon["wavelength"] = wavelengths[i]
+            photon["time"] = time
+            photon.append()
+
         self.table.flush()
 
     def get_column(self, col_name):
