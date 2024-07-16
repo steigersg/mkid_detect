@@ -1,6 +1,7 @@
 from photon_list import PhotonList
 import time
 import numpy as np
+from utils import remove_deadtime
 
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, max_phot_per_file, save_dir=''):
