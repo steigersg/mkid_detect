@@ -25,9 +25,9 @@ class MKIDDetect:
         dead_time: int
             MKID pixel dead time (microseconds).
         pixel_pitch: float
-            Pixel pitch (cm)
+            Pixel pitch (cm).
         dark_photon_rate:
-            Rate of expected counts due to background sources of radiation (counts/s)
+            Rate of expected counts due to background sources of radiation (counts/s).
         save_dir: str
             Directory where to save generate HDF5 files.
         """
