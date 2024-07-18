@@ -83,7 +83,7 @@ class MKIDDetect:
                 measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
 
                 xs = np.full(np.shape(measured_times), x)
-                ys = np.full(np.shape(measured_times), x)
+                ys = np.full(np.shape(measured_times), y)
 
                 pl.add_photons(measured_times, measured_wvls, xs, ys)
 
