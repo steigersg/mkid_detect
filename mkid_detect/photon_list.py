@@ -5,8 +5,6 @@ class Photon(IsDescription):
     wavelength = Float64Col()
     x = UInt16Col()
     y = UInt16Col()
-    wavelength = Float64Col()
-    time = UInt16Col()
 
 
 class PhotonList:
