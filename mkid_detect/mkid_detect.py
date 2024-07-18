@@ -96,3 +96,19 @@ class MKIDDetect:
             pl.add_photons(cr_times[i], cr_wvls[i], cr_xs[i], cr_ys[i])
 
         return pl
+
+
+if __name__ == '__main__':
+    mkid = MKIDDetect(1, 5000, 0.9, 1000, 0.2, 10,  0.03)
+
+    focal_image = np.ones((50, 50))
+
+    for (x, y), i in np.ndenumerate(focal_image):
+        if x == y:
+            focal_image[x, y] = 10
+
+    pl = mkid.sim_output([focal_image], 1, [600])
+    im = pl.generate_image()
+    plt.imshow(im)
+    plt.colorbar()
+    plt.show()
