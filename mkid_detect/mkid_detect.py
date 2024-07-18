@@ -81,6 +81,10 @@ class MKIDDetect:
                 measured_times = self.get_photon_arrival_times(val, exp_time)
                 measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
 
+                if len(measured_times) > (self.sat_rate * exp_time):
+                    measured_times = measured_times[:self.sat_rate * exp_time]
+                    measured_wvls = measured_wvls[:self.sat_rate * exp_time]
+
                 xs = np.full(np.shape(measured_times), x)
                 ys = np.full(np.shape(measured_times), y)
 
