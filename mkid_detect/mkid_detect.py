@@ -73,11 +73,9 @@ class MKIDDetect:
         for map in fluxmap:
             map *= self.QE
 
-
         self.start = int(time.time())
 
         pl = PhotonList(start=self.start)
-
 
         if not self.R_map:
             self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
