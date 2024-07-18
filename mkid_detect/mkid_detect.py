@@ -2,9 +2,10 @@ from photon_list import PhotonList
 import time
 import numpy as np
 from utils import remove_deadtime
+from cosmic_rays import cosmic_rays
 
 class MKIDDetect:
-    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, max_phot_per_file, save_dir=''):
+    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, max_phot_per_file, pixel_pitch, save_dir=''):
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
         self.QE = QE
@@ -15,6 +16,8 @@ class MKIDDetect:
         self.save_dir = save_dir
         self.start = 0
         self.R_map = None
+        self.pixel_pitch = pixel_pitch # in cm
+
         self.tau = 0.1  # photon correlation time
         self.taufac = 500
 
@@ -78,4 +81,14 @@ class MKIDDetect:
                 measured_times = self.get_photon_arrival_times(val, exp_time)
                 measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
 
-                pl.add_photons(x, y, measured_wvls, measured_times)
+                xs = np.full(np.shape(measured_times), x)
+                ys = np.full(np.shape(measured_times), x)
+
+                pl.add_photons(measured_times, measured_wvls, xs, ys)
+
+        cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
+                                                      self.cr_rate, exp_time, self.pixel_pitch)
+        for i, hit in enumerate(cr_times):
+            pl.add_photons(cr_times[i], cr_wvls[i], cr_xs[i], cr_ys[i])
+
+        return pl
