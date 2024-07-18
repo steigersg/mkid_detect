@@ -1,3 +1,5 @@
+import numpy as np
+import tables
 from tables import *
 
 class Photon(IsDescription):
