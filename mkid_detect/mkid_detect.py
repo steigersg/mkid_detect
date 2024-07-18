@@ -15,7 +15,7 @@ class MKIDDetect:
         self.save_dir = save_dir
         self.start = 0
         self.R_map = None
-        self.pixel_pitch = pixel_pitch # in cm
+        self.pixel_pitch = pixel_pitch  # in cm
 
         self.tau = 0.1  # photon correlation time
         self.taufac = 500
