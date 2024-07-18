@@ -8,16 +8,16 @@ def cosmic_rays(xdim, ydim, cr_rate, exp_time, pixel_pitch):
 
     Parameters
     ----------
-    xdim:
-        pixels
-    ydim:
-        pixels
+    xdim: int
+        Number of pixels in x-dimension.
+    ydim: int
+        Number of pixels in x-dimension.
     cr_rate:
-        cosmic rays/ cm^2 / s
-    exp_time:
-        s
-    pixel_pitch:
-        cm
+        Cosmic ray rate (events/cm^2/s)
+    exp_time: float
+        Total duration of the observation.
+    pixel_pitch: float
+        Pixel pitch (cm).
 
     Returns
     -------
