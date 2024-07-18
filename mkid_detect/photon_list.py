@@ -11,6 +11,13 @@ class Photon(IsDescription):
 
 class PhotonList:
     def __init__(self, start):
+        """
+
+        Parameters
+        ----------
+        start: float
+            Start time of the observation (Unix timestamp).
+        """
         self.start = start
         self.name = f"{self.start}.h5"
 
@@ -22,14 +29,61 @@ class PhotonList:
         self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
 
     def add_photons(self, times, wavelengths, x, y):
+        """
+
+        Parameters
+        ----------
+        times: np.ndarray
+            Times of photons to be added (microseconds).
+        wavelengths: np.ndarray
+            Wavelengths of photons to be added (nm).
+        x: np.ndarray
+            x-coordinates of photons to be added.
+        y: np.ndarray
+            y-coordinates of photons to be added.
+
+        Returns
+        -------
+
+        """
         self.table.append((times, wavelengths, x, y))
         self.table.flush()
 
     def get_column(self, col_name):
+        """
+
+        Parameters
+        ----------
+        col_name: str
+            Name of column to query. Options are 'x', 'y', 'time', 'wavelength'.
+
+        Returns
+        -------
+
+        """
         table = self.h5file.root.MKID.readout
         return [x[col_name] for x in table.iterrows()]
 
     def query_photons(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None, pixel=None):
+        """
+
+        Parameters
+        ----------
+        start_wvl: float
+            Starting wavelength (nm).
+        stop_wvl: float
+            Ending wavelength (nm).
+        start_time: float
+            Start time (s).
+        stop_time:
+            Stop time (s).
+        pixel: (int, int)
+            (x, y) pixel coordinate. If None will return the whole array.
+
+        Returns
+        -------
+
+        """
         if pixel is not None:
             pixel_condition = f'(x == {pixel[0]}) & (y == {pixel[1]})'
         else:
@@ -62,6 +116,23 @@ class PhotonList:
         return self.table.read_where(condition)
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
+        """
+
+        Parameters
+        ----------
+        start_wvl: float
+            Starting wavelength (nm).
+        stop_wvl: float
+            Ending wavelength (nm).
+        start_time: float
+            Start time (s).
+        stop_time:
+            Stop time (s).
+
+        Returns
+        -------
+
+        """
         x_dim = np.max(self.get_column('x'))
         y_dim = np.max(self.get_column('y'))
         image = np.zeros((x_dim, y_dim))
