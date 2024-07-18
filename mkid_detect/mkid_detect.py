@@ -8,6 +8,29 @@ from hcipy import *
 
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate, save_dir=''):
+        """
+
+        Parameters
+        ----------
+        cr_rate: float
+            Cosmic ray rate (events/cm^2/s).
+        sat_rate: float
+            Saturation rate of the MKID (counts/s/wvl).
+        QE: float
+            Quantum Efficiency.
+        R: int
+            MKID average energy resolution.
+        R_std: float
+            Standard deviation in energy resolution per pixel.
+        dead_time: int
+            MKID pixel dead time (microseconds).
+        pixel_pitch: float
+            Pixel pitch (cm)
+        dark_photon_rate:
+            Rate of expected counts due to background sources of radiation (counts/s)
+        save_dir: str
+            Directory where to save generate HDF5 files.
+        """
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
         self.QE = QE
@@ -46,6 +69,19 @@ class MKIDDetect:
         return np.random.normal(loc=true_wvl, scale=del_E, size=size)
 
     def get_photon_arrival_times(self, flux, exp_time):
+        """
+
+        Parameters
+        ----------
+        flux: float
+            Expected flux in the given pixel (counts/s)
+        exp_time: float
+            Total duration of the observation.
+
+        Returns
+        -------
+
+        """
         # this is the easiest thing to do (poisson), can later implement other
         # arrival time statistics, i.e. MR
         # exp_time is in seconds
@@ -66,6 +102,21 @@ class MKIDDetect:
         return keep
 
     def sim_output(self, fluxmap, exp_time, wavelengths):
+        """
+
+        Parameters
+        ----------
+        fluxmap: np.ndarray
+            Array of fluxes for each pixel at each wavelength.
+        exp_time: float
+            Total duration of the observation.
+        wavelengths: list
+            Discretized wavelengths to use for this observation.
+
+        Returns
+        -------
+
+        """
         # fluxmap in phot/pix/s/nm
         # exp_time in seconds
         dims = np.shape(fluxmap)
