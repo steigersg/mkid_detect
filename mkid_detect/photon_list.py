@@ -2,6 +2,7 @@ import numpy as np
 import tables
 from tables import *
 
+
 class Photon(IsDescription):
     time = UInt32Col()
     wavelength = Float64Col()
