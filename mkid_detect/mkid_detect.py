@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from hcipy import *
 
 class MKIDDetect:
-    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, save_dir=''):
+    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate, save_dir=''):
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
         self.QE = QE
@@ -15,6 +15,7 @@ class MKIDDetect:
         self.R_std = R_std
         self.dead_time = dead_time  # in us
         self.save_dir = save_dir
+        self.dark_photon_rate = dark_photon_rate
         self.start = 0
         self.R_map = None
         self.pixel_pitch = pixel_pitch  # in cm
@@ -72,6 +73,7 @@ class MKIDDetect:
 
         for map in fluxmap:
             map *= self.QE
+            map += self.dark_photon_rate * exp_time
 
         self.start = int(time.time())
 
@@ -103,7 +105,7 @@ class MKIDDetect:
 
 
 if __name__ == '__main__':
-    mkid = MKIDDetect(1, 5000, 0.9, 1000, 0.2, 10,  0.03)
+    mkid = MKIDDetect(1, 5000, 0.9, 1000, 0.2, 10,  0.03, dark_photon_rate=1e-3)
 
     focal_image = np.ones((50, 50))
 
