@@ -1,6 +1,8 @@
 from tables import *
 
 class Photon(IsDescription):
+    time = UInt32Col()
+    wavelength = Float64Col()
     x = UInt16Col()
     y = UInt16Col()
     wavelength = Float64Col()
