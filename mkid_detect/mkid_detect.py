@@ -70,6 +70,10 @@ class MKIDDetect:
         dims = np.shape(fluxmap)
         assert dims[0] == len(wavelengths)
 
+        for map in fluxmap:
+            map *= self.QE
+
+
         self.start = int(time.time())
 
         pl = PhotonList(start=self.start)
