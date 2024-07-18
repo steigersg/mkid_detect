@@ -5,14 +5,13 @@ from utils import remove_deadtime
 from cosmic_rays import cosmic_rays
 
 class MKIDDetect:
-    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, max_phot_per_file, pixel_pitch, save_dir=''):
+    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, save_dir=''):
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
         self.QE = QE
         self.R = R
         self.R_std = R_std
-        self.dead_time = dead_time # in us
-        self.max_phot_per_file = max_phot_per_file
+        self.dead_time = dead_time  # in us
         self.save_dir = save_dir
         self.start = 0
         self.R_map = None
