@@ -58,3 +58,15 @@ class PhotonList:
             condition += '&' + pixel_condition
 
         return self.table.read_where(condition)
+
+    def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
+        x_dim = np.max(self.get_column('x'))
+        y_dim = np.max(self.get_column('y'))
+        image = np.zeros((x_dim, y_dim))
+
+        for (x, y), i in np.ndenumerate(image):
+            photons = self.query_photons(start_wvl, stop_wvl, start_time, stop_time, pixel=(x, y))
+            image[x, y] = len(photons)
+
+        return image
+
