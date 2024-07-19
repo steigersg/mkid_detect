@@ -11,7 +11,10 @@ class Photon(IsDescription):
 
 class PhotonList:
     def __init__(self, start):
-        """
+        """Create and manipulate a PyTable containing photon entries.
+
+        Contains methods for adding, querying, and generating images from
+        a table of photons with properties given by the Photon class.
 
         Parameters
         ----------
@@ -29,7 +32,10 @@ class PhotonList:
         self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
 
     def add_photons(self, times, wavelengths, x, y):
-        """
+        """Add photons to the PhotonList.
+
+        Given array of times, wavelengths, x-coordinates, and y-coordinates, adds
+        those photons to the end of the photon table.
 
         Parameters
         ----------
@@ -50,7 +56,9 @@ class PhotonList:
         self.table.flush()
 
     def get_column(self, col_name):
-        """
+        """Returns a column of the photon list.
+
+        Returns the column of the photon table for the specified column name.
 
         Parameters
         ----------
@@ -59,13 +67,16 @@ class PhotonList:
 
         Returns
         -------
-
+        column: list
+            Values of the specified column.
         """
         table = self.h5file.root.MKID.readout
-        return [x[col_name] for x in table.iterrows()]
+        column = [x[col_name] for x in table.iterrows()]
+        return column
+
 
     def query_photons(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None, pixel=None):
-        """
+        """Returns photons satisfying the specified query conditions.
 
         Parameters
         ----------
@@ -82,7 +93,8 @@ class PhotonList:
 
         Returns
         -------
-
+        filtered_table: Table
+            Photons satisfying the query conditions.
         """
         if pixel is not None:
             pixel_condition = f'(x == {pixel[0]}) & (y == {pixel[1]})'
@@ -113,10 +125,14 @@ class PhotonList:
         if pixel_condition != '':
             condition += '&' + pixel_condition
 
-        return self.table.read_where(condition)
+        filtered_table = self.table.read_where(condition)
+        return filtered_table
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
-        """
+        """Generate an image from a PhotonList.
+
+        Generates a 2D image array from the PhotonList satisfying the given
+        conditions.
 
         Parameters
         ----------
@@ -131,7 +147,8 @@ class PhotonList:
 
         Returns
         -------
-
+        image: np.ndarray
+            The output image.
         """
         x_dim = np.max(self.get_column('x'))
         y_dim = np.max(self.get_column('y'))
