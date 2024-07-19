@@ -1,10 +1,13 @@
 import numpy as np
 
-# add fireball sim (or approximate by just isntantaneously lighting up the array)
-# if phonon move 300 m/s or 300 microns/microsecond
 
 def cosmic_rays(xdim, ydim, cr_rate, exp_time, pixel_pitch):
-    """
+    """Generates photon entries caused by a cosmic ray hit on the detector.
+
+    Calculates the expected number of cosmic ray hits given the cosmic ray rate,
+    pixel dimensions, and pixel pitch. Then generates and returns the expected photon entries.
+    This function assumes a cosmic ray event will light up every pixel on the
+    array within a 20 microsecond window as per https://iopscience.iop.org/article/10.3847/1538-3881/ac5833.
 
     Parameters
     ----------
@@ -21,7 +24,14 @@ def cosmic_rays(xdim, ydim, cr_rate, exp_time, pixel_pitch):
 
     Returns
     -------
-
+    cr_xs: np.ndarray
+        Array of x-coordinates where a cosmic ray photon hit.
+    cr_ys: np.ndarray
+        Array of y-coordinates where a cosmic ray photon hit.
+    cr_wvls: np.ndarray
+        Array of registered wavelengths for each cosmic ray photon hit.
+    cr_times: np.ndarray
+        Array of times when a cosmic ray photon was registered.
     """
     # to start just assume all pixels get saturated
     array_area = (xdim * pixel_pitch) * (ydim * pixel_pitch)
@@ -48,8 +58,6 @@ def cosmic_rays(xdim, ydim, cr_rate, exp_time, pixel_pitch):
     # generate a random wavelength
     cr_wvls = np.random.choice(np.arange(100, 1000, 1), size=(total_hits, len(cr_xs)))
 
-    return np.tile(cr_xs, (total_hits, 1)), np.tile(cr_ys, (total_hits, 1)), cr_wvls, cr_times
-
-
-
-cosmic_rays(100, 100, 1, 10, 0.03)
+    cr_xs = np.tile(cr_xs, (total_hits, 1))
+    cr_ys = np.tile(cr_ys, (total_hits, 1))
+    return cr_xs, cr_ys, cr_wvls, cr_times
