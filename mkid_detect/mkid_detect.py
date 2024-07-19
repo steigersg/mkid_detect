@@ -8,7 +8,11 @@ from hcipy import *
 
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate, save_dir=''):
-        """
+        """ Create an MKID output photon list for a given input fluxmap.
+
+        This class includes the sim_output utility which returns an output photon list
+        for a given input fluxmap. A series of wavelength dependent flux maps can also be
+        given.
 
         Parameters
         ----------
@@ -29,7 +33,7 @@ class MKIDDetect:
         dark_photon_rate:
             Rate of expected counts due to background sources of radiation (counts/s).
         save_dir: str
-            Directory where to save generate HDF5 files.
+            Directory where to save generated HDF5 files.
         """
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
@@ -47,10 +51,11 @@ class MKIDDetect:
         self.taufac = 500
 
     def get_photon_wavelengths(self, true_wvl, R, size):
-        """
+        """Get list of wavelengths degraded by resolution R.
+
         Generates a wavelength for a number of photons given the true
-        wavelength that those photons should have and the energy reosltuion of
-        your pixel.
+        wavelength that those photons should have and the energy resolution of
+        the pixel.
 
         Parameters
         ----------
@@ -63,7 +68,8 @@ class MKIDDetect:
 
         Returns
         -------
-
+        np.ndarray
+            Array of photon wavelengths with uncertainty given by R.
         """
         del_E = true_wvl / R
         return np.random.normal(loc=true_wvl, scale=del_E, size=size)
@@ -80,7 +86,8 @@ class MKIDDetect:
 
         Returns
         -------
-
+        list
+            Photon arrival times, Poisson distributed and accounting for pixel deadtime.
         """
         # this is the easiest thing to do (poisson), can later implement other
         # arrival time statistics, i.e. MR
@@ -102,7 +109,11 @@ class MKIDDetect:
         return keep
 
     def sim_output(self, fluxmap, exp_time, wavelengths):
-        """
+        """Simulate an MKID output.
+
+        Given an (optionally wavelength dependent) input flux map, exposure time,
+        and list of wavelengths corresponding to the flux map, outputs a simulated
+        MKID photon list including any noise sources.
 
         Parameters
         ----------
@@ -115,7 +126,9 @@ class MKIDDetect:
 
         Returns
         -------
-
+        PhotonList
+            Instance of the PhotonList class containing all the photons for a
+            given fluxmap and noise parameters.
         """
         # fluxmap in phot/pix/s/nm
         # exp_time in seconds
