@@ -4,7 +4,6 @@ import numpy as np
 from utils import remove_deadtime
 from cosmic_rays import cosmic_rays
 import matplotlib.pyplot as plt
-from hcipy import *
 
 
 class MKIDDetect:
