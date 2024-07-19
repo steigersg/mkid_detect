@@ -51,7 +51,7 @@ class MKIDDetect:
         self.taufac = 500
 
     def get_photon_wavelengths(self, true_wvl, R, size):
-        """Get list of wavelengths degraded by resolution R.
+        """Get array of wavelengths degraded by resolution R.
 
         Generates a wavelength for a number of photons given the true
         wavelength that those photons should have and the energy resolution of
@@ -68,14 +68,18 @@ class MKIDDetect:
 
         Returns
         -------
-        np.ndarray
+        measured_wvl: np.ndarray
             Array of photon wavelengths with uncertainty given by R.
         """
         del_E = true_wvl / R
-        return np.random.normal(loc=true_wvl, scale=del_E, size=size)
+        measured_wvl = np.random.normal(loc=true_wvl, scale=del_E, size=size)
+        return measured_wvl
 
     def get_photon_arrival_times(self, flux, exp_time):
-        """
+        """Get array of arrival times.
+
+        Returns an array of expected photon arrival times given an input flux.
+        Accounts for poisson statistics and the MKID array deadtime.
 
         Parameters
         ----------
@@ -86,8 +90,8 @@ class MKIDDetect:
 
         Returns
         -------
-        list
-            Photon arrival times, Poisson distributed and accounting for pixel deadtime.
+        keep_times: list
+            Photon arrival times (microseconds).
         """
         # this is the easiest thing to do (poisson), can later implement other
         # arrival time statistics, i.e. MR
@@ -104,9 +108,9 @@ class MKIDDetect:
 
         tlist += N * np.random.rand(len(tlist))
 
-        keep = remove_deadtime(tlist, dead_time=self.dead_time)
+        keep_times = remove_deadtime(tlist, dead_time=self.dead_time)
 
-        return keep
+        return keep_times
 
     def sim_output(self, fluxmap, exp_time, wavelengths):
         """Simulate an MKID output.
@@ -126,7 +130,7 @@ class MKIDDetect:
 
         Returns
         -------
-        PhotonList
+        pl: PhotonList
             Instance of the PhotonList class containing all the photons for a
             given fluxmap and noise parameters.
         """
