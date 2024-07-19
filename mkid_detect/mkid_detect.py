@@ -95,12 +95,10 @@ class MKIDDetect:
         """
         # this is the easiest thing to do (poisson), can later implement other
         # arrival time statistics, i.e. MR
-        # exp_time is in seconds
-        # flux is in photons/s
 
         N = max(int(self.tau * 1e6 / self.taufac), 1)
 
-        # generate discretize time bins
+        # Generate discretized time bins.
         t = np.arange(0, int(exp_time * 1e6), N)
         n = np.random.poisson(np.ones(t.shape) * flux / 1e6 * N)
 
@@ -108,6 +106,7 @@ class MKIDDetect:
 
         tlist += N * np.random.rand(len(tlist))
 
+        # Remove photons that arrive too close to the preceding photon.
         keep_times = remove_deadtime(tlist, dead_time=self.dead_time)
 
         return keep_times
@@ -134,8 +133,6 @@ class MKIDDetect:
             Instance of the PhotonList class containing all the photons for a
             given fluxmap and noise parameters.
         """
-        # fluxmap in phot/pix/s/nm
-        # exp_time in seconds
         dims = np.shape(fluxmap)
         assert dims[0] == len(wavelengths)
 
@@ -166,8 +163,8 @@ class MKIDDetect:
 
         cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
                                                       self.cr_rate, exp_time, self.pixel_pitch)
-        for i, hit in enumerate(cr_times):
-            pl.add_photons(cr_times[i], cr_wvls[i], cr_xs[i], cr_ys[i])
+        for j, hit in enumerate(cr_times):
+            pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
 
         return pl
 
