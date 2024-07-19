@@ -6,6 +6,7 @@ from cosmic_rays import cosmic_rays
 import matplotlib.pyplot as plt
 from hcipy import *
 
+
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate, save_dir=''):
         """ Create an MKID output photon list for a given input fluxmap.
