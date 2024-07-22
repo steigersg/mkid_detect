@@ -33,6 +33,13 @@ class PhotonList:
 
         self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
 
+    @property
+    def table_size(self):
+        return self.table.size_on_disk
+
+    def remove(self):
+        os.remove(self.name)
+
     def add_photons(self, times, wavelengths, x, y):
         """Add photons to the PhotonList.
 
