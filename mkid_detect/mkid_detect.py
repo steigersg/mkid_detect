@@ -133,6 +133,8 @@ class MKIDDetect:
             Discretized wavelengths to use for this observation.
         max_mem: float
             Maxmimum size of ourput HDF5 mile (MB)
+        save_dir: str
+            The directory to save the generated HDF5 files to.
 
         Returns
         -------
