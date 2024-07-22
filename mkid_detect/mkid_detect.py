@@ -117,6 +117,8 @@ class MKIDDetect:
         estimated_memory = (1.6 * total_photons) / 1.0e5
         return estimated_memory
 
+    # TODO add function to manage file size, exposure times and file names so
+    #  the user can just set how long they want to ``integrate`` for
     def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
         """Simulate an MKID output.
 
