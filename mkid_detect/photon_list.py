@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from tables import *
 
@@ -10,7 +11,7 @@ class Photon(IsDescription):
 
 
 class PhotonList:
-    def __init__(self, start):
+    def __init__(self, start, save_dir=''):
         """Create and manipulate a PyTable containing photon entries.
 
         Contains methods for adding, querying, and generating images from
@@ -22,7 +23,8 @@ class PhotonList:
             Start time of the observation (Unix timestamp).
         """
         self.start = start
-        self.name = f"{self.start}.h5"
+        self.save_dir = save_dir
+        self.name = os.path.join(self.save_dir, f"{self.start}.h5")
 
         self.table = None
         self.h5file = open_file(self.name, mode="w", title="Photon Table")
