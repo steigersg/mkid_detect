@@ -7,7 +7,7 @@ from photon_list import PhotonList
 
 
 class MKIDDetect:
-    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate, save_dir=''):
+    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate):
         """ Create an MKID output photon list for a given input fluxmap.
 
         This class includes the sim_output utility which returns an output photon list
@@ -41,7 +41,6 @@ class MKIDDetect:
         self.R = R
         self.R_std = R_std
         self.dead_time = dead_time  # in us
-        self.save_dir = save_dir
         self.dark_photon_rate = dark_photon_rate
         self.start = 0
         self.R_map = None
@@ -112,6 +111,7 @@ class MKIDDetect:
         return keep_times
 
     def sim_output(self, fluxmap, exp_time, wavelengths):
+    def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
         """Simulate an MKID output.
 
         Given an (optionally wavelength dependent) input flux map, exposure time,
