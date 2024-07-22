@@ -131,6 +131,8 @@ class MKIDDetect:
             Total duration of the observation.
         wavelengths: list
             Discretized wavelengths to use for this observation.
+        max_mem: float
+            Maxmimum size of ourput HDF5 mile (MB)
 
         Returns
         -------
