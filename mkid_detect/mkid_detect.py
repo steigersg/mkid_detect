@@ -191,7 +191,7 @@ if __name__ == '__main__':
         if x == y:
             focal_image[x, y] = 10
 
-    pl = mkid.sim_output([focal_image], 1, [600])
+    pl = mkid.sim_output([focal_image], 100, [600], max_mem=10, save_dir='')
     im = pl.generate_image()
     plt.imshow(im)
     plt.colorbar()
