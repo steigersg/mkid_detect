@@ -158,10 +158,7 @@ class MKIDDetect:
 
         self.start = int(time.time())
 
-        pl = PhotonList(start=self.start)
-
-        if not self.R_map:
-            self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
+        pl = PhotonList(start=self.start, save_dir=save_dir)
 
         for i, wvl in enumerate(wavelengths):
             for (x, y), val in np.ndenumerate(fluxmap[i]):
