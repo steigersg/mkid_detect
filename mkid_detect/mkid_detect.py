@@ -110,7 +110,12 @@ class MKIDDetect:
 
         return keep_times
 
-    def sim_output(self, fluxmap, exp_time, wavelengths):
+    def estimate_table_size(self, exp_time, fluxmap, num_wavelengths):
+        total_photons = np.sum(fluxmap * exp_time * num_wavelengths)
+        # 1.6 MB for 1e5 photons
+        estimated_memory = (1.6 * total_photons) / 1.0e5
+        return estimated_memory
+
     def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
         """Simulate an MKID output.
 
