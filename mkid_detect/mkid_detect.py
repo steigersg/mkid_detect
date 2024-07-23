@@ -120,6 +120,51 @@ class MKIDDetect:
     # TODO add function to manage file size, exposure times and file names so
     #  the user can just set how long they want to ``integrate`` for
     def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
+        """
+
+        Parameters
+        ----------
+        fluxmap: np.ndarray
+            Array of fluxes for each pixel at each wavelength.
+        exp_time: float
+            Total duration of the observation.
+        wavelengths: list
+            Discretized wavelengths to use for this observation.
+        max_mem: float
+            Maxmimum size of ourput HDF5 mile (MB)
+        save_dir: str
+            The directory to save the generated HDF5 files to.
+
+        Returns
+        -------
+        pls: list
+            Output PhotonLists for the desired observation.
+        """
+        pls = []
+        start_time = int(time.time())
+        estimated_total_mem = self.estimate_table_size(exp_time, fluxmap)
+
+        if estimated_total_mem > 1e6:
+            raise MemoryError("This file will be greater than 1 TB, please lower your desired exposure time.")
+
+        if estimated_total_mem < max_mem:
+            start_times = np.array([start_time])
+            exp_times = np.array([exp_time])
+
+        else:
+            num_files = int(estimated_total_mem / max_mem)
+            print(f"Using {num_files} files for generating total exposure")
+            exp_time /= num_files
+            start_times = np.array([int(start_time + i*exp_time) for i in range(num_files)])
+            exp_times = np.array([exp_time for i in start_times])
+
+        for i, t in enumerate(exp_times):
+            pl = self.sim_exposure(fluxmap, t, wavelengths, max_mem=max_mem, start_time=start_times[i], save_dir=save_dir)
+            pls.append(pl)
+
+        return pls
+
+    def sim_exposure(self, fluxmap, exp_time, wavelengths, max_mem=10.0, start_time=None, save_dir=''):
         """Simulate an MKID output.
 
         Given an (optionally wavelength dependent) input flux map, exposure time,
