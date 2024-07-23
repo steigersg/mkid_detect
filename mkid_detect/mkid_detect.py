@@ -155,7 +155,7 @@ class MKIDDetect:
         if not self.R_map:
             self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
 
-        estimated_total_mem = self.estimate_table_size(exp_time, fluxmap, len(wavelengths))
+        estimated_total_mem = self.estimate_table_size(exp_time, fluxmap)
 
         if estimated_total_mem > max_mem:
             raise MemoryError('The file you are asking for is bigger than the set maximum. '
