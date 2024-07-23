@@ -232,16 +232,17 @@ class MKIDDetect:
 
 
 if __name__ == '__main__':
-    mkid = MKIDDetect(1, 5000, 0.9, 1000, 0.2, 10,  0.03, dark_photon_rate=1e-3)
+    mkid = MKIDDetect(1, 5000, 0.9, 10, 0.2, 10,  0.03, dark_photon_rate=1e-3)
 
-    focal_image = np.ones((50, 50))
+    focal_image = np.full((50, 50), 10, dtype=float)
 
     for (x, y), i in np.ndenumerate(focal_image):
         if x == y:
-            focal_image[x, y] = 10
+            focal_image[x, y] = 50
+            focal_image[y, -x] = 50
 
-    pl = mkid.sim_output([focal_image], 100, [600], max_mem=10, save_dir='')
-    im = pl.generate_image()
+    pls = mkid.sim_output([focal_image, focal_image], 10, [400, 600], max_mem=1, save_dir='./h5files')
+    im = pls[0].generate_image()
     plt.imshow(im)
     plt.colorbar()
     plt.show()
