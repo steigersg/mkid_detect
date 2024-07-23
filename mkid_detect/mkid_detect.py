@@ -204,7 +204,8 @@ class MKIDDetect:
             raise MemoryError('The file you are asking for is bigger than the set maximum. '
                               'Try decreasing your integration time.')
 
-        self.start = int(time.time())
+        if not start_time:
+            start_time = int(time.time())
 
         pl = PhotonList(start=self.start, save_dir=save_dir)
 
