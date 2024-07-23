@@ -118,7 +118,13 @@ class MKIDDetect:
         return estimated_memory
 
     def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
-        """
+        """Simulate an MKID exposure
+
+        Given an (optionally wavelength dependent) input flux map, exposure time,
+        and list of wavelengths corresponding to the flux map, outputs a series of
+        simulated MKID photon list including any noise sources. The output will be broken
+        up into multiple PhotonLists such that the size of any one file does not
+        exceed the specified max_mem value.
 
         Parameters
         ----------
@@ -163,7 +169,7 @@ class MKIDDetect:
         return pls
 
     def sim_exposure(self, fluxmap, exp_time, wavelengths, max_mem=10.0, start_time=None, save_dir=''):
-        """Simulate an MKID output.
+        """Simulate an MKID exposure.
 
         Given an (optionally wavelength dependent) input flux map, exposure time,
         and list of wavelengths corresponding to the flux map, outputs a simulated
@@ -241,7 +247,7 @@ if __name__ == '__main__':
             focal_image[x, y] = 50
             focal_image[y, -x] = 50
 
-    pls = mkid.sim_output([focal_image, focal_image], 10, [400, 600], max_mem=1, save_dir='./h5files')
+    pls = mkid.sim_output(np.ndarray([focal_image, focal_image]), 10, [400, 600], max_mem=1, save_dir='./h5files')
     im = pls[0].generate_image()
     plt.imshow(im)
     plt.colorbar()
