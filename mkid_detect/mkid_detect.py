@@ -207,7 +207,7 @@ class MKIDDetect:
         if not start_time:
             start_time = int(time.time())
 
-        pl = PhotonList(start=self.start, save_dir=save_dir)
+        pl = PhotonList(start=start_time, save_dir=save_dir)
 
         for i, wvl in enumerate(wavelengths):
             for (x, y), val in np.ndenumerate(fluxmap[i]):
