@@ -195,7 +195,7 @@ class MKIDDetect:
             map *= self.QE
             map += self.dark_photon_rate * exp_time
 
-        if not self.R_map:
+        if self.R_map is None:
             self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
 
         estimated_total_mem = self.estimate_table_size(exp_time, fluxmap)
