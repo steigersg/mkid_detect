@@ -110,9 +110,9 @@ class MKIDDetect:
 
         return keep_times
 
-    def estimate_table_size(self, exp_time, fluxmap, num_wavelengths):
+    def estimate_table_size(self, exp_time, fluxmap):
         photons = [f * exp_time for f in fluxmap]
-        total_photons = np.sum(photons * num_wavelengths)
+        total_photons = np.sum(photons)
         # 1.6 MB for 1e5 photons
         estimated_memory = (1.6 * total_photons) / 1.0e5
         return estimated_memory
