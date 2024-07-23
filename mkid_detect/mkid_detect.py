@@ -200,7 +200,7 @@ class MKIDDetect:
 
         estimated_total_mem = self.estimate_table_size(exp_time, fluxmap)
 
-        if estimated_total_mem > max_mem:
+        if int(estimated_total_mem) > max_mem:
             raise MemoryError('The file you are asking for is bigger than the set maximum. '
                               'Try decreasing your integration time.')
 
