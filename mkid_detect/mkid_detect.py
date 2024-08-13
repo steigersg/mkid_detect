@@ -1,9 +1,9 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from .utils import remove_deadtime
-from .cosmic_rays import cosmic_rays
-from .photon_list import PhotonList
+from utils import remove_deadtime
+from cosmic_rays import cosmic_rays
+from photon_list import PhotonList
 
 
 class MKIDDetect:
