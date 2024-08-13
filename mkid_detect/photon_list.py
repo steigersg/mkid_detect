@@ -26,6 +26,9 @@ class PhotonList:
         self.save_dir = save_dir
         self.name = os.path.join(self.save_dir, f"{self.start}.h5")
 
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
+
         self.table = None
         self.h5file = open_file(self.name, mode="w", title="Photon Table")
 
