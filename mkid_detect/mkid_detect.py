@@ -195,7 +195,9 @@ class MKIDDetect:
             given fluxmap and noise parameters.
         """
         dims = np.shape(fluxmap)
-        assert dims[0] == len(wavelengths)
+        if dims[0] != len(wavelengths):
+            raise AssertionError(f"Spectral dimensionsof the fluxmap ({dims[0]}) does "
+                                 f"not match the specified wavelengths ({wavelengths})")
 
         for map in fluxmap:
             map *= self.QE
