@@ -120,6 +120,7 @@ class MKIDDetect:
         return keep_times
 
     def estimate_table_size(self, exp_time, fluxmap):
+        fluxmap[fluxmap > self.sat_rate] = self.sat_rate
         photons = [f * exp_time for f in fluxmap]
         total_photons = np.sum(photons)
         # 1.6 MB for 1e5 photons
@@ -238,12 +239,11 @@ class MKIDDetect:
 
         for i, wvl in enumerate(wavelengths):
             for (x, y), val in np.ndenumerate(fluxmap[i]):
+                if val > self.sat_rate:
+                    val = self.sat_rate
+
                 measured_times = self.get_photon_arrival_times(val, exp_time)
                 measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
-
-                if len(measured_times) > (self.sat_rate * exp_time):
-                    measured_times = measured_times[:int(self.sat_rate * exp_time)]
-                    measured_wvls = measured_wvls[:int(self.sat_rate * exp_time)]
 
                 xs = np.full(np.shape(measured_times), x)
                 ys = np.full(np.shape(measured_times), y)
