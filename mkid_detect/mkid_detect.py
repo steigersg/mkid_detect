@@ -257,6 +257,27 @@ class MKIDDetect:
 
         return pl
 
+    def sim_output_image(self, fluxmap, exp_time, wavelengths):
+        """ Lightweight method for simulating an output without making photon lists.
+
+        Note that this integrates over all the temporal information available to an MKID which
+        may not be desired.
+
+        Parameters
+        ----------
+        fluxmap: np.ndarray
+            Array of fluxes for each pixel at each wavelength.
+        exp_time: float
+            Total duration of the observation (s).
+        wavelengths: list
+            Discretized wavelengths to use for this observation.
+
+        Returns
+        -------
+
+        """
+        dims = np.shape(fluxmap)
+        images = np.zeros_like(fluxmap)
 
 if __name__ == '__main__':
     mkid = MKIDDetect(1, 5000, 0.9, 10, 0.2, 10,  0.03, dark_photon_rate=1e-3)
