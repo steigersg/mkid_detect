@@ -141,11 +141,11 @@ class MKIDDetect:
         fluxmap: np.ndarray
             Array of fluxes for each pixel at each wavelength.
         exp_time: float
-            Total duration of the observation.
+            Total duration of the observation (s).
         wavelengths: list
             Discretized wavelengths to use for this observation.
         max_mem: float
-            Maxmimum size of ourput HDF5 mile (MB)
+            Maxmimum size of output HDF5 mile (MB)
         save_dir: str
             The directory to save the generated HDF5 files to.
 
