@@ -15,3 +15,12 @@ def remove_deadtime(t_list, dead_time=10):
     keep_times.append(int(t_list[-1]))
 
     return np.array(keep_times, dtype=int)
+
+
+def generate_pixel_mask(fraction_masked, dims):
+    mask = np.zeros(dims).flatten()
+    num_masked = int(mask.flatten().shape[0] * fraction_masked)
+    mask[:num_masked] = 1
+    np.random.shuffle(mask)
+    return mask.reshape(dims).astype('bool')
+
