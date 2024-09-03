@@ -206,7 +206,7 @@ class MKIDDetect:
         """
         dims = np.shape(fluxmap)
         if dims[0] != len(wavelengths):
-            raise AssertionError(f"Spectral dimensionsof the fluxmap ({dims[0]}) does "
+            raise AssertionError(f"Spectral dimensions of the fluxmap ({dims[0]}) does "
                                  f"not match the specified wavelengths ({wavelengths})")
 
         if self.dead_pixel_mask is None:
