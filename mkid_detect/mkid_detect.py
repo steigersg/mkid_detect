@@ -1,4 +1,5 @@
 import time
+from hcipy.util import large_poisson
 import numpy as np
 import matplotlib.pyplot as plt
 from mkid_detect.utils import remove_deadtime
