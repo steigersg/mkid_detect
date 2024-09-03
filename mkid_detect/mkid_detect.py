@@ -300,29 +300,3 @@ class MKIDDetect:
             images[i] = large_poisson(flux)
 
         return images
-
-# if __name__ == '__main__':
-#
-#     focal_image = np.full((50, 50), 10, dtype=float)
-#
-#     dead_mask = np.zeros(focal_image.shape, dtype=bool)
-#     dead_mask[20][20] = True
-#     dead_mask[15][13] = True
-#
-#     hot_mask = np.zeros(focal_image.shape, dtype=bool)
-#     hot_mask[10][10] = True
-#     hot_mask[35][9] = True
-#
-#     mkid = MKIDDetect(1, 5000, 0.9, 10, 0.2, 10,  0.03,
-#                       dark_photon_rate=1e-3, dead_pixel_mask=dead_mask, hot_pixel_mask=hot_mask)
-#
-#     for (x, y), i in np.ndenumerate(focal_image):
-#         if x == y:
-#             focal_image[x, y] = 50
-#             focal_image[y, -x] = 50
-#
-#     pls = mkid.sim_output(focal_image[np.newaxis,:,:].repeat(2, axis=0), 10, [400, 600], max_mem=1, save_dir='./h5files')
-#     im = pls[0].generate_image()
-#     plt.imshow(im, vmin=5, vmax=50)
-#     plt.colorbar()
-#     plt.show()
