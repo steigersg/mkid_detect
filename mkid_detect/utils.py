@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def remove_deadtime(t_list, dead_time=10):
     # TODO rewrite in C to speed up
     keep_times = []
