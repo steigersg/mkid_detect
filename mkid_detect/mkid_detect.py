@@ -255,6 +255,8 @@ class MKIDDetect:
         for j, hit in enumerate(cr_times):
             pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
 
+        pl.close()
+
         return pl
 
     def sim_output_image(self, fluxmap, exp_time, wavelengths):
