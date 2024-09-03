@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import tables
 from tables import *
 
 
@@ -82,10 +83,14 @@ class PhotonList:
         column: list
             Values of the specified column.
         """
-        table = self.h5file.root.MKID.readout
-        column = [x[col_name] for x in table.iterrows()]
+        if self.h5file.isopen:
+            table = self.h5file.root.MKID.readout
+            column = [x[col_name] for x in table.iterrows()]
+        else:
+            with tables.open_file(self.name, mode='r') as h5file:
+                table = h5file.root.MKID.readout
+                column = [x[col_name] for x in table.iterrows()]
         return column
-
 
     def query_photons(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None, pixel=None):
         """Returns photons satisfying the specified query conditions.
@@ -137,7 +142,12 @@ class PhotonList:
         if pixel_condition != '':
             condition += '&' + pixel_condition
 
-        filtered_table = self.table.read_where(condition)
+        if self.h5file.isopen:
+            filtered_table = self.table.read_where(condition)
+        else:
+            with tables.open_file(self.name, mode='r') as h5file:
+                table = h5file.root.MKID.readout
+                filtered_table = table.read_where(condition)
         return filtered_table
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
@@ -160,8 +170,9 @@ class PhotonList:
         Returns
         -------
         image: np.ndarray
-            The output image.
+            The output image (counts).
         """
+        # TODO what if photon list is empty?
         x_dim = np.max(self.get_column('x'))
         y_dim = np.max(self.get_column('y'))
         image = np.zeros((x_dim, y_dim))
@@ -172,3 +183,5 @@ class PhotonList:
 
         return image
 
+    def close(self):
+        self.h5file.close()
