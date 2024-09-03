@@ -172,7 +172,6 @@ class PhotonList:
         image: np.ndarray
             The output image (counts).
         """
-        # TODO what if photon list is empty?
         x_dim = np.max(self.get_column('x'))
         y_dim = np.max(self.get_column('y'))
         image = np.zeros((x_dim, y_dim))
