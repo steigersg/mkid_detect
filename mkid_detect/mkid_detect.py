@@ -276,7 +276,8 @@ class MKIDDetect:
 
         Returns
         -------
-
+        images: np.ndarray
+            Array of the (optionally wavelength dependent) images output by the MKID detector
         """
         dims = np.shape(fluxmap)
         images = np.zeros_like(fluxmap)
