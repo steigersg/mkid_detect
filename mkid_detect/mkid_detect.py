@@ -7,7 +7,8 @@ from mkid_detect.photon_list import PhotonList
 
 
 class MKIDDetect:
-    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch, dark_photon_rate):
+    def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch,
+                 dark_photon_rate, dead_pixel_mask=None, hot_pixel_mask=None):
         """ Create an MKID output photon list for a given input fluxmap.
 
         This class includes the sim_output utility which returns an output photon list
@@ -34,6 +35,11 @@ class MKIDDetect:
             Rate of expected counts due to background sources of radiation (counts/s).
         save_dir: str
             Directory where to save generated HDF5 files.
+        dead_pixel_mask: np.ndarray
+            Boolean array specifying the location of dead pixels.
+        hot_pixel_mask: np.ndarray
+            Boolean array specifying the location of hot pixels.
+
         """
         self.cr_rate = cr_rate
         self.sat_rate = sat_rate
@@ -45,6 +51,8 @@ class MKIDDetect:
         self.start = 0
         self.R_map = None
         self.pixel_pitch = pixel_pitch  # in cm
+        self.dead_pixel_mask = dead_pixel_mask
+        self.hot_pixel_mask = hot_pixel_mask
 
         self.tau = 0.1  # photon correlation time
         self.taufac = 500
@@ -199,9 +207,19 @@ class MKIDDetect:
             raise AssertionError(f"Spectral dimensionsof the fluxmap ({dims[0]}) does "
                                  f"not match the specified wavelengths ({wavelengths})")
 
-        for map in fluxmap:
-            map *= self.QE
-            map += self.dark_photon_rate * exp_time
+        if self.dead_pixel_mask is None:
+            self.dead_pixel_mask = np.zeros_like(fluxmap[0])
+
+        if self.hot_pixel_mask is None:
+            self.hot_pixel_mask = np.zeros_like(fluxmap[0])
+
+        for flux in fluxmap:
+            flux *= ~self.dead_pixel_mask
+            flux[self.hot_pixel_mask] = self.sat_rate
+            flux *= self.QE
+            flux += self.dark_photon_rate * exp_time
+
+        fluxmap = large_poisson(fluxmap)
 
         if self.R_map is None:
             self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
