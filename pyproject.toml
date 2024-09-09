@@ -7,7 +7,7 @@ name = "mkid_detect"
 authors = [
 { name = "Sarah Steiger", email = "ssteiger@stsci.edu" },
 ]
-description = "A Python pipeline to generate plots for exoplanet yield simulations."
+description = "A tool for generating simulated MKID outputs."
 dependencies = ["matplotlib", "numpy", "hcipy", "tables"]
 license = { file = "LICENSE" }
 dynamic = ['readme', 'version']
