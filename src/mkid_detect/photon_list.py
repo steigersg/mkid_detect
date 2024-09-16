@@ -2,6 +2,7 @@ import os
 import numpy as np
 import tables
 from tables import *
+from tqdm import tqdm
 
 
 class Photon(IsDescription):
@@ -176,9 +177,11 @@ class PhotonList:
         y_dim = np.max(self.get_column('y'))
         image = np.zeros((x_dim, y_dim))
 
-        for (x, y), i in np.ndenumerate(image):
-            photons = self.query_photons(start_wvl, stop_wvl, start_time, stop_time, pixel=(x, y))
-            image[x, y] = len(photons)
+        with tqdm(total=x_dim*y_dim) as pbar:
+            for (x, y), i in np.ndenumerate(image):
+                photons = self.query_photons(start_wvl, stop_wvl, start_time, stop_time, pixel=(x, y))
+                image[x, y] = len(photons)
+                pbar.update(1)
 
         return image
 
