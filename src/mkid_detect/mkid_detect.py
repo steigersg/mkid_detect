@@ -1,9 +1,9 @@
 import time
 from hcipy.util import large_poisson
 import numpy as np
-from src.mkid_detect.mkid_detect import remove_deadtime
-from src.mkid_detect.mkid_detect import cosmic_rays
-from src.mkid_detect.mkid_detect import PhotonList
+from mkid_detect.utils import remove_deadtime
+from mkid_detect.cosmic_rays import cosmic_rays
+from mkid_detect.photon_list import PhotonList
 
 
 class MKIDDetect:
