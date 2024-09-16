@@ -4,6 +4,7 @@ import numpy as np
 from mkid_detect.utils import remove_deadtime
 from mkid_detect.cosmic_rays import cosmic_rays
 from mkid_detect.photon_list import PhotonList
+from tqdm import tqdm
 
 
 class MKIDDetect:
@@ -236,18 +237,20 @@ class MKIDDetect:
 
         pl = PhotonList(start=start_time, save_dir=save_dir)
 
-        for i, wvl in enumerate(wavelengths):
-            for (x, y), val in np.ndenumerate(fluxmap[i]):
-                if val > self.sat_rate:
-                    val = self.sat_rate
+        with tqdm(total=np.sum(fluxmap) * exp_time) as pbar:
+            for i, wvl in enumerate(wavelengths):
+                for (x, y), val in np.ndenumerate(fluxmap[i]):
+                    if val > self.sat_rate:
+                        val = self.sat_rate
 
-                measured_times = self.get_photon_arrival_times(val, exp_time)
-                measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
+                    measured_times = self.get_photon_arrival_times(val, exp_time)
+                    measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
 
-                xs = np.full(np.shape(measured_times), x)
-                ys = np.full(np.shape(measured_times), y)
+                    xs = np.full(np.shape(measured_times), x)
+                    ys = np.full(np.shape(measured_times), y)
 
-                pl.add_photons(measured_times, measured_wvls, xs, ys)
+                    pl.add_photons(measured_times, measured_wvls, xs, ys)
+                    pbar.update(len(measured_times))
 
         cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
                                                       self.cr_rate, exp_time, self.pixel_pitch)
@@ -255,7 +258,7 @@ class MKIDDetect:
             pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
 
         pl.close()
-
+        print("done with pl")
         return pl
 
     def sim_output_image(self, fluxmap, exp_time, wavelengths):
