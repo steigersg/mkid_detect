@@ -9,9 +9,24 @@ MKID data by nature can be quite memory intensive so caution should be taken to 
 issues are not encountered.
 ## Installation
 
+### PyPI
 mkid_detect is available on the [PyPI repository](https://pypi.org/project/mkid-detect/) and can be installed by running: 
 
 `pip install mkid_detect`
+
+### GitHub
+
+Start by cloning the repository:
+
+`git clone git@github.com:steigersg/mkid_detect.git`
+
+Then run
+
+` pip install .`
+
+If you would like to edit or modify the package use the `-e` flag as: 
+
+`pip install -e .`
 
 ## The MKIDDetect Class
 There are two main ways to interact with MKIDDetect: The `sim_output` function and the `sim_output_image`
