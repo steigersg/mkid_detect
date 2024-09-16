@@ -252,10 +252,11 @@ class MKIDDetect:
                     pl.add_photons(measured_times, measured_wvls, xs, ys)
                     pbar.update(len(measured_times))
 
-        cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
-                                                      self.cr_rate, exp_time, self.pixel_pitch)
-        for j, hit in enumerate(cr_times):
-            pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
+        if self.cr_rate > 0:
+            cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
+                                                              self.cr_rate, exp_time, self.pixel_pitch)
+            for j, hit in enumerate(cr_times):
+                pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
 
         pl.close()
         print("done with pl")
