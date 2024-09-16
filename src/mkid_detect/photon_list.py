@@ -144,7 +144,6 @@ class PhotonList:
         if pixel_condition != '':
             condition += '&' + pixel_condition
 
-        logger.info(f"Querying photons with condition: {condition}")
         if self.h5file.isopen:
             filtered_table = self.table.read_where(condition)
         else:
@@ -179,6 +178,7 @@ class PhotonList:
         y_dim = np.max(self.get_column('y'))
         image = np.zeros((x_dim, y_dim))
 
+        logger.info(f"Querying photons with condition: {start_wvl} < wvl < {stop_wvl} & {start_time} < time < {stop_time}")
         with tqdm(total=x_dim*y_dim) as pbar:
             for (x, y), i in np.ndenumerate(image):
                 photons = self.query_photons(start_wvl, stop_wvl, start_time, stop_time, pixel=(x, y))
