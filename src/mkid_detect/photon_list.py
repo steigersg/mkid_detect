@@ -3,6 +3,7 @@ import numpy as np
 import tables
 from tables import *
 from tqdm import tqdm
+from mkid_detect.logger import logger
 
 
 class Photon(IsDescription):
@@ -143,6 +144,7 @@ class PhotonList:
         if pixel_condition != '':
             condition += '&' + pixel_condition
 
+        logger.info(f"Querying photons with condition: {condition}")
         if self.h5file.isopen:
             filtered_table = self.table.read_where(condition)
         else:
