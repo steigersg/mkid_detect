@@ -4,6 +4,7 @@ import numpy as np
 from mkid_detect.utils import remove_deadtime
 from mkid_detect.cosmic_rays import cosmic_rays
 from mkid_detect.photon_list import PhotonList
+from mkid_detect.logger import logger
 from tqdm import tqdm
 
 
@@ -172,6 +173,7 @@ class MKIDDetect:
             start_times = np.array([int(start_time + i*exp_time) for i in range(num_files)])
             exp_times = np.array([exp_time for i in start_times])
 
+        logger.info(f"Simulating {len(exp_times)} photon lists from the provided data.")
         for i, t in enumerate(exp_times):
             pl = self.sim_exposure(fluxmap, t, wavelengths, max_mem=max_mem, start_time=start_times[i], save_dir=save_dir)
             pls.append(pl)
@@ -259,7 +261,7 @@ class MKIDDetect:
                 pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
 
         pl.close()
-        print("done with pl")
+        logger.info("Photon list generation completed.")
         return pl
 
     def sim_output_image(self, fluxmap, exp_time, wavelengths):
