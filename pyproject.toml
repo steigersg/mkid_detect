@@ -12,7 +12,7 @@ dependencies = ["matplotlib", "numpy", "hcipy", "tables"]
 license = { file = "LICENSE" }
 readme = "README.md"
 version= "0.1.0"
-requires-python = ">=3.9"
+requires-python = ">=3.7"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mkid_detect"]
