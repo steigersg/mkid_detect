@@ -7,6 +7,11 @@ saved to an HDF5 file.
 
 MKID data by nature can be quite memory intensive so caution should be taken to ensure memory
 issues are not encountered.
+## Installation
+
+mkid_detect is available on the [PyPI repository](https://pypi.org/project/mkid-detect/) and can be installed by running: 
+
+`pip install mkid_detect`
 
 ## The MKIDDetect Class
 There are two main ways to interact with MKIDDetect: The `sim_output` function and the `sim_output_image`
