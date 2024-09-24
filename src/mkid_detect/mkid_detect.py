@@ -168,7 +168,7 @@ class MKIDDetect:
 
         else:
             num_files = int(estimated_total_mem / max_mem)
-            print(f"Using {num_files} files for generating total exposure")
+            logger.info(f"Using {num_files} files for generating total exposure")
             exp_time /= num_files
             start_times = np.array([int(start_time + i*exp_time) for i in range(num_files)])
             exp_times = np.array([exp_time for i in start_times])
