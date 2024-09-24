@@ -302,8 +302,17 @@ class MKIDDetect:
             flux *= ~self.dead_pixel_mask
             flux[self.hot_pixel_mask] = self.sat_rate
             flux *= self.QE
+
+            flux *= exp_time
             flux += self.dark_photon_rate * exp_time
-            flux += self.cr_rate * exp_time
+
+            # add one photon per pixel per cosmic ray hit
+            array_area = (np.shape(flux)[0] * self.pixel_pitch) * (np.shape(flux)[1] * self.pixel_pitch)
+            hits_per_sec = array_area * self.cr_rate
+            total_hits = int(hits_per_sec * exp_time)
+            flux += np.full_like(flux, total_hits)
+
+            # finally add Poisson noise
             images[i] = large_poisson(flux)
 
         return images
