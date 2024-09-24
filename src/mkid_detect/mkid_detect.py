@@ -8,6 +8,11 @@ from mkid_detect.logger import logger
 from tqdm import tqdm
 
 
+PhotonNumpyType = np.dtype([('time', np.uint32),
+                            ('wavelength', np.float32),
+                            ('x', np.uint32),
+                            ('y', np.uint32)])
+
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch,
                  dark_photon_rate, dead_pixel_mask=None, hot_pixel_mask=None):
@@ -239,7 +244,17 @@ class MKIDDetect:
 
         pl = PhotonList(start=start_time, save_dir=save_dir)
 
-        with tqdm(total=np.sum(fluxmap) * exp_time) as pbar:
+        hits_per_sec = (dims[1] * self.pixel_pitch) * (dims[2] * self.pixel_pitch) * self.cr_rate
+        total_hits = int(hits_per_sec * exp_time)
+
+        max_photons = int(np.sum(fluxmap * exp_time) + (total_hits * dims[1] * dims[2]))
+
+        photons = np.zeros(max_photons, dtype=PhotonNumpyType)
+        photons = np.ascontiguousarray(photons)
+
+        total_phot = 0
+
+        with tqdm(total=max_photons) as pbar:
             for i, wvl in enumerate(wavelengths):
                 for (x, y), val in np.ndenumerate(fluxmap[i]):
                     if val > self.sat_rate:
@@ -251,15 +266,39 @@ class MKIDDetect:
                     xs = np.full(np.shape(measured_times), x)
                     ys = np.full(np.shape(measured_times), y)
 
-                    pl.add_photons(measured_times, measured_wvls, xs, ys)
-                    pbar.update(len(measured_times))
+                    n_phot = len(measured_times)
+
+                    new_phot = total_phot + n_phot
+
+                    photons[total_phot:new_phot]['time'] = measured_times
+                    photons[total_phot:new_phot]['wavelength'] = measured_wvls
+                    photons[total_phot:new_phot]['x'] = xs
+                    photons[total_phot:new_phot]['y'] = ys
+
+                    total_phot += n_phot
+                    pbar.update(n_phot)
 
         if self.cr_rate > 0:
             logger.info('Adding cosmic ray counts.')
             cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
                                                               self.cr_rate, exp_time, self.pixel_pitch)
             for j, hit in enumerate(cr_times):
-                pl.add_photons(cr_times[j], cr_wvls[j], cr_xs[j], cr_ys[j])
+                n_phot = len(cr_times[j])
+                new_phot = total_phot + n_phot
+                photons[total_phot:new_phot]['time'] = cr_times[j]
+                photons[total_phot:new_phot]['wavelength'] = cr_wvls[j]
+                photons[total_phot:new_phot]['x'] = cr_xs[j]
+                photons[total_phot:new_phot]['y'] = cr_ys[j]
+
+                total_phot += n_phot
+
+        # remove any leftover photon rows
+        photons = photons[photons['time'] != 0]
+
+        pl.add_photons(np.array(photons['time']),
+                       np.array(photons['wavelength']),
+                       np.array(photons['x']),
+                       np.array(photons['y']))
 
         pl.close()
         logger.info("Photon list generation completed.")
