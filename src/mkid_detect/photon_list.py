@@ -68,6 +68,8 @@ class PhotonList:
 
         """
         self.table.append((times, wavelengths, x, y))
+        self.table.cols.x.create_index()
+        self.table.cols.y.create_index()
         self.table.flush()
 
     def get_column(self, col_name):
@@ -149,7 +151,8 @@ class PhotonList:
         else:
             with tables.open_file(self.name, mode='r') as h5file:
                 table = h5file.root.MKID.readout
-                filtered_table = table.read_where(condition)
+                filtered_table = [row['time'] for row in table.where(condition)]
+                #filtered_table = table.read_where(condition)
         return filtered_table
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
