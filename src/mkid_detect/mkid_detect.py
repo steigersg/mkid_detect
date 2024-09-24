@@ -255,6 +255,7 @@ class MKIDDetect:
                     pbar.update(len(measured_times))
 
         if self.cr_rate > 0:
+            logger.info('Adding cosmic ray counts.')
             cr_xs, cr_ys, cr_wvls, cr_times = cosmic_rays(np.shape(fluxmap)[1], np.shape(fluxmap)[2],
                                                               self.cr_rate, exp_time, self.pixel_pitch)
             for j, hit in enumerate(cr_times):
