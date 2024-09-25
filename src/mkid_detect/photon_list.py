@@ -69,7 +69,6 @@ class PhotonList:
         """
         self.table.append((times, wavelengths, x, y))
         self.table.cols.x.create_index()
-        self.table.cols.y.create_index()
         self.table.flush()
 
     def get_column(self, col_name):
