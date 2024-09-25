@@ -13,6 +13,7 @@ PhotonNumpyType = np.dtype([('time', np.uint32),
                             ('x', np.uint32),
                             ('y', np.uint32)])
 
+
 class MKIDDetect:
     def __init__(self, cr_rate, sat_rate, QE, R, R_std, dead_time, pixel_pitch,
                  dark_photon_rate, dead_pixel_mask=None, hot_pixel_mask=None):
@@ -62,8 +63,7 @@ class MKIDDetect:
         self.hot_pixel_mask = hot_pixel_mask
 
         self.tau = 0.1  # photon correlation time
-        self.taufac = 500
-
+        self.taufac = 500  # bin fraction (us)
 
     def get_photon_arrival_times(self, flux, exp_time):
         """Get array of arrival times.
@@ -102,11 +102,14 @@ class MKIDDetect:
         return keep_times
 
     def estimate_table_size(self, exp_time, fluxmap):
+        """Estimate size of HDF5 file from expected number of photons."""
         fluxmap[fluxmap > self.sat_rate] = self.sat_rate
         photons = [f * exp_time for f in fluxmap]
         total_photons = np.sum(photons)
+
         # 1.6 MB for 1e5 photons
         estimated_memory = (1.6 * total_photons) / 1.0e5
+
         return estimated_memory
 
     def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
@@ -127,7 +130,7 @@ class MKIDDetect:
         wavelengths: list
             Discretized wavelengths to use for this observation.
         max_mem: float
-            Maxmimum size of output HDF5 mile (MB)
+            Maxmimum size of output HDF5 mile (MB).
         save_dir: str
             The directory to save the generated HDF5 files to.
 
@@ -155,6 +158,7 @@ class MKIDDetect:
             exp_times = np.array([exp_time for i in start_times])
 
         logger.info(f"Simulating {len(exp_times)} photon lists from the provided data.")
+
         for i, t in enumerate(exp_times):
             pl = self.sim_exposure(fluxmap, t, wavelengths, max_mem=max_mem, start_time=start_times[i], save_dir=save_dir)
             pls.append(pl)
@@ -178,6 +182,8 @@ class MKIDDetect:
             Discretized wavelengths to use for this observation.
         max_mem: float
             Maxmimum size of ourput HDF5 mile (MB)
+        start_time: int
+            Unix timestamp for the start of the observation. Used for HDF5 file name.
         save_dir: str
             The directory to save the generated HDF5 files to.
 
@@ -215,11 +221,7 @@ class MKIDDetect:
             raise MemoryError('The file you are asking for is bigger than the set maximum. '
                               'Try decreasing your integration time.')
 
-        if not start_time:
-            start_time = int(time.time())
-
-        pl = PhotonList(start=start_time, save_dir=save_dir)
-
+        # Calculate maximum number of expected photons.
         hits_per_sec = (dims[1] * self.pixel_pitch) * (dims[2] * self.pixel_pitch) * self.cr_rate
         total_hits = int(hits_per_sec * exp_time)
 
@@ -237,13 +239,12 @@ class MKIDDetect:
                         val = self.sat_rate
 
                     measured_times = self.get_photon_arrival_times(val, exp_time)
-                    measured_wvls = self.get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
+                    measured_wvls = get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
 
                     xs = np.full(np.shape(measured_times), x)
                     ys = np.full(np.shape(measured_times), y)
 
                     n_phot = len(measured_times)
-
                     new_phot = total_phot + n_phot
 
                     photons[total_phot:new_phot]['time'] = measured_times
@@ -261,6 +262,7 @@ class MKIDDetect:
             for j, hit in enumerate(cr_times):
                 n_phot = len(cr_times[j])
                 new_phot = total_phot + n_phot
+
                 photons[total_phot:new_phot]['time'] = cr_times[j]
                 photons[total_phot:new_phot]['wavelength'] = cr_wvls[j]
                 photons[total_phot:new_phot]['x'] = cr_xs[j]
@@ -268,9 +270,15 @@ class MKIDDetect:
 
                 total_phot += n_phot
 
-        # remove any leftover photon rows
+        # Remove any leftover photon rows.
         photons = photons[photons['time'] != 0]
 
+        # Instantiate PhotonList.
+        if not start_time:
+            start_time = int(time.time())
+        pl = PhotonList(start=start_time, save_dir=save_dir)
+
+        # Add photons to the photon list.
         pl.add_photons(np.array(photons['time']),
                        np.array(photons['wavelength']),
                        np.array(photons['x']),
@@ -278,6 +286,7 @@ class MKIDDetect:
 
         pl.close()
         logger.info("Photon list generation completed.")
+
         return pl
 
     def sim_output_image(self, fluxmap, exp_time, wavelengths):
@@ -321,13 +330,13 @@ class MKIDDetect:
             flux *= exp_time
             flux += self.dark_photon_rate * exp_time
 
-            # add one photon per pixel per cosmic ray hit
+            # Add one photon per pixel per cosmic ray hit.
             array_area = (np.shape(flux)[0] * self.pixel_pitch) * (np.shape(flux)[1] * self.pixel_pitch)
             hits_per_sec = array_area * self.cr_rate
             total_hits = int(hits_per_sec * exp_time)
             flux += np.full_like(flux, total_hits)
 
-            # finally add Poisson noise
+            # Finally, add Poisson noise.
             images[i] = large_poisson(flux)
 
         return images
