@@ -151,7 +151,6 @@ class PhotonList:
             with tables.open_file(self.name, mode='r') as h5file:
                 table = h5file.root.MKID.readout
                 filtered_table = [row['time'] for row in table.where(condition)]
-                #filtered_table = table.read_where(condition)
         return filtered_table
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
