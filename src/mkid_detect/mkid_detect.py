@@ -64,30 +64,6 @@ class MKIDDetect:
         self.tau = 0.1  # photon correlation time
         self.taufac = 500
 
-    def get_photon_wavelengths(self, true_wvl, R, size):
-        """Get array of wavelengths degraded by resolution R.
-
-        Generates a wavelength for a number of photons given the true
-        wavelength that those photons should have and the energy resolution of
-        the pixel.
-
-        Parameters
-        ----------
-        true_wvl: float
-            The true wavelength of the photon (in nm)
-        R: float
-            The energy resolution to use.
-        size: int
-            How many draws to make from the normal distribution defined by R.
-
-        Returns
-        -------
-        measured_wvl: np.ndarray
-            Array of photon wavelengths with uncertainty given by R.
-        """
-        del_E = true_wvl / R
-        measured_wvl = np.random.normal(loc=true_wvl, scale=del_E, size=size)
-        return measured_wvl
 
     def get_photon_arrival_times(self, flux, exp_time):
         """Get array of arrival times.
@@ -355,3 +331,29 @@ class MKIDDetect:
             images[i] = large_poisson(flux)
 
         return images
+
+
+def get_photon_wavelengths(true_wvl, R, size):
+    """Get array of wavelengths degraded by resolution R.
+
+    Generates a wavelength for a number of photons given the true
+    wavelength that those photons should have and the energy resolution of
+    the pixel.
+
+    Parameters
+    ----------
+    true_wvl: float
+        The true wavelength of the photon (in nm)
+    R: float
+        The energy resolution to use.
+    size: int
+        How many draws to make from the normal distribution defined by R.
+
+    Returns
+    -------
+    measured_wvl: np.ndarray
+        Array of photon wavelengths with uncertainty given by R.
+    """
+    del_E = true_wvl / R
+    measured_wvl = np.random.normal(loc=true_wvl, scale=del_E, size=size)
+    return measured_wvl
