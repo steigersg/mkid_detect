@@ -6,6 +6,7 @@ from mkid_detect.utils import remove_deadtime
 from mkid_detect.cosmic_rays import cosmic_rays
 from mkid_detect.photon_list import PhotonList
 from mkid_detect.logger import logger
+from mkid_detect.arrival_time_statistics.poisson import poisson_arrival_times
 from tqdm import tqdm
 
 
@@ -66,7 +67,7 @@ class MKIDDetect:
         self.tau = 0.1  # photon correlation time
         self.taufac = 500  # bin fraction (us)
 
-    def get_photon_arrival_times(self, flux, exp_time):
+    def get_photon_arrival_times(self, flux, exp_time, statistics="poisson"):
         """Get array of arrival times.
 
         Returns an array of expected photon arrival times given an input flux.
@@ -84,18 +85,10 @@ class MKIDDetect:
         keep_times: list
             Photon arrival times (microseconds).
         """
-        # this is the easiest thing to do (poisson), can later implement other
-        # arrival time statistics, i.e. MR
-
-        N = max(int(self.tau * 1e6 / self.taufac), 1)
-
-        # Generate discretized time bins.
-        t = np.arange(0, int(exp_time * 1e6), N)
-        n = np.random.poisson(np.ones(t.shape) * flux / 1e6 * N)
-
-        tlist = t[n > 0] * 1.
-
-        tlist += N * np.random.rand(len(tlist))
+        if statistics == "poisson":
+            tlist = poisson_arrival_times(flux, exp_time, self.tau, self.taufac)
+        else:
+            raise NotImplementedError("Only Poisson arrival time statistics are currently supported")
 
         # Remove photons that arrive too close to the preceding photon.
         keep_times = remove_deadtime(tlist, dead_time=self.dead_time)
