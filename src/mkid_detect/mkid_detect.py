@@ -1,4 +1,5 @@
 import time
+import os
 from hcipy.util import large_poisson
 import numpy as np
 from mkid_detect.utils import remove_deadtime
@@ -276,7 +277,9 @@ class MKIDDetect:
         # Instantiate PhotonList.
         if not start_time:
             start_time = int(time.time())
-        pl = PhotonList(start=start_time, save_dir=save_dir)
+        file_path = os.path.join(save_dir, f"{start_time}.h5")
+
+        pl = PhotonList(file=file_path)
 
         # Add photons to the photon list.
         pl.add_photons(np.array(photons['time']),

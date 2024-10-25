@@ -14,7 +14,7 @@ class Photon(IsDescription):
 
 
 class PhotonList:
-    def __init__(self, start, save_dir=''):
+    def __init__(self, file):
         """Create and manipulate a PyTable containing photon entries.
 
         Contains methods for adding, querying, and generating images from
@@ -22,26 +22,28 @@ class PhotonList:
 
         Parameters
         ----------
-        start: float
-            Start time of the observation (Unix timestamp).
+        file: str
+            Fully qualified filepath to the HDF5 file containign the photon list.
         """
-        self.start = start
-        self.save_dir = save_dir
-        self.name = os.path.join(self.save_dir, f"{self.start}.h5")
-
-        if not os.path.exists(self.save_dir):
-            os.makedirs(self.save_dir)
-
-        self.table = None
-        self.h5file = open_file(self.name, mode="w", title="Photon Table")
-
-        group = self.h5file.create_group("/", 'MKID', 'MKID Information')
-
-        self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
+        self.name = file
+        if os.path.exists(self.name):
+            print("loading file")
+            self._load()
+        else:
+            self._create()
 
     @property
     def table_size(self):
         return self.table.size_on_disk
+
+    def _load(self):
+        self.h5file = open_file(self.name, mode="a", title="Photon Table")
+        self.table = self.h5file.get_node('/MKID/readout')
+
+    def _create(self):
+        self.h5file = open_file(self.name, mode="w", title="Photon Table")
+        group = self.h5file.create_group("/", 'MKID', 'MKID Information')
+        self.table = self.h5file.create_table(group, 'readout', Photon, "MKID Readout File")
 
     def remove(self):
         os.remove(self.name)
@@ -151,6 +153,8 @@ class PhotonList:
             with tables.open_file(self.name, mode='r') as h5file:
                 table = h5file.root.MKID.readout
                 filtered_table = [row['time'] for row in table.where(condition)]
+
+        self.h5file.close()
         return filtered_table
 
     def generate_image(self, start_wvl=None, stop_wvl=None, start_time=None, stop_time=None):
