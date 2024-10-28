@@ -201,11 +201,10 @@ class MKIDDetect:
 
         for flux in fluxmap:
             flux *= ~self.dead_pixel_mask
-            flux[self.hot_pixel_mask] = self.sat_rate
             flux *= self.QE
             flux += self.dark_photon_rate * exp_time
 
-        fluxmap = large_poisson(fluxmap)
+            flux[self.hot_pixel_mask] = self.sat_rate
 
         if self.R_map is None:
             self.R_map = np.random.normal(loc=self.R, scale=self.R_std, size=np.shape(fluxmap[0]))
