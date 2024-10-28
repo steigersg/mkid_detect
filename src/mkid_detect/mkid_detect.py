@@ -110,7 +110,7 @@ class MKIDDetect:
 
         return estimated_memory
 
-    def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir=''):
+    def sim_output(self, fluxmap, exp_time, wavelengths, max_mem=10.0,  save_dir='', Is=None, Ip=None):
         """Simulate an MKID exposure
 
         Given an (optionally wavelength dependent) input flux map, exposure time,
@@ -158,12 +158,12 @@ class MKIDDetect:
         logger.info(f"Simulating {len(exp_times)} photon lists from the provided data.")
 
         for i, t in enumerate(exp_times):
-            pl = self.sim_exposure(fluxmap, t, wavelengths, max_mem=max_mem, start_time=start_times[i], save_dir=save_dir)
+            pl = self.sim_exposure(fluxmap, t, wavelengths, max_mem=max_mem, start_time=start_times[i], save_dir=save_dir, Is=Is, Ip=Ip)
             pls.append(pl)
 
         return pls
 
-    def sim_exposure(self, fluxmap, exp_time, wavelengths, max_mem=10.0, start_time=None, save_dir=''):
+    def sim_exposure(self, fluxmap, exp_time, wavelengths, max_mem=10.0, start_time=None, save_dir='', Is=None, Ip=None):
         """Simulate an MKID exposure.
 
         Given an (optionally wavelength dependent) input flux map, exposure time,
@@ -184,6 +184,11 @@ class MKIDDetect:
             Unix timestamp for the start of the observation. Used for HDF5 file name.
         save_dir: str
             The directory to save the generated HDF5 files to.
+        Is: np.ndarray
+            Array of the time varying component of the flux. If not None then fluxmap is assumed to
+            be the static (coherent) component of the flux.
+        Ip: np.ndarray
+            Array of the flux for any companions in the image.
 
         Returns
         -------
@@ -223,8 +228,13 @@ class MKIDDetect:
         hits_per_sec = (dims[1] * self.pixel_pitch) * (dims[2] * self.pixel_pitch) * self.cr_rate
         total_hits = int(hits_per_sec * exp_time)
 
-        max_photons = int(np.sum(fluxmap * exp_time) + (total_hits * dims[1] * dims[2]))
+        max_photons = np.sum(fluxmap * exp_time) + (total_hits * dims[1] * dims[2])
+        if Is is not None:
+            max_photons += np.sum(Is * exp_time)
+        if Ip is not None:
+            max_photons += np.sum(Ip * exp_time)
 
+        max_photons = int(max_photons)
         photons = np.zeros(max_photons, dtype=PhotonNumpyType)
         photons = np.ascontiguousarray(photons)
 
@@ -236,20 +246,29 @@ class MKIDDetect:
                     if val > self.sat_rate:
                         val = self.sat_rate
 
-                    measured_times = self.get_photon_arrival_times(val, exp_time)
-                    measured_wvls = get_photon_wavelengths(wvl, self.R_map[x, y], size=len(measured_times))
+                    if Is is not None:
+                        measured_times = self.get_photon_arrival_times((val, Is[i, x, y]), exp_time, statistics="mr")
+                    else:
+                        measured_times = self.get_photon_arrival_times(val, exp_time, statistics="poisson")
+                    if Ip is not None:
+                        measured_times += self.get_photon_arrival_times(Ip[i, x, y], exp_time, statistics="gamma")
 
-                    xs = np.full(np.shape(measured_times), x)
-                    ys = np.full(np.shape(measured_times), y)
+                    measured_times = np.sort(measured_times)
+                    # Remove photons that arrive too close to the preceding photon.
+                    keep_times = remove_deadtime(measured_times, dead_time=self.dead_time)
 
-                    n_phot = len(measured_times)
+                    measured_wvls = get_photon_wavelengths(wvl, self.R_map[x, y], size=len(keep_times))
+
+                    xs = np.full(np.shape(keep_times), x)
+                    ys = np.full(np.shape(keep_times), y)
+
+                    n_phot = len(keep_times)
                     new_phot = total_phot + n_phot
 
-                    photons[total_phot:new_phot]['time'] = measured_times
+                    photons[total_phot:new_phot]['time'] = keep_times
                     photons[total_phot:new_phot]['wavelength'] = measured_wvls
                     photons[total_phot:new_phot]['x'] = xs
                     photons[total_phot:new_phot]['y'] = ys
-
                     total_phot += n_phot
                     pbar.update(n_phot)
 
