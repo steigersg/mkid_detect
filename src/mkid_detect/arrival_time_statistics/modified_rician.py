@@ -23,17 +23,25 @@ def mr_arrival_times(Ic, Is, exp_time, tau, taufac):
     tlist: list
         Photon arrival times following MR statistics with decorrelation time tau.
     """
-
+    # Find size of time bins.
     N = max(int(tau * 1e6 / taufac), 1)
 
+    # Generate discretized time bins.
     t, normal = corrsequence(int(exp_time * 1e6 / N), tau * 1e6 / N)
+
     uniform = 0.5 * (special.erf(normal / np.sqrt(2)) + 1)
     t *= N
     f = mr_icdf(Ic, Is)
 
+    # Calculate expected intensity.
     I = f(uniform) / 1e6
+
+    # Find expected number of photons per bin.
     n = np.random.poisson(I * N)
+
     tlist = t[n > 0] * 1.
+
+    # Add a random number to find exact time for each photon within the bin.
     tlist += N * np.random.rand(len(tlist))
     return tlist
 

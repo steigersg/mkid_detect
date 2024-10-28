@@ -20,13 +20,17 @@ def poisson_arrival_times(flux, exp_time, tau, taufac):
     tlist: list
         Photon arrival times following Poisson statistics with decorrelation time tau.
     """
+    # Find size of time bins.
     N = max(int(tau * 1e6 / taufac), 1)
 
     # Generate discretized time bins.
     t = np.arange(0, int(exp_time * 1e6), N)
+
+    # Find expected number of photons per bin.
     n = np.random.poisson(np.ones(t.shape) * flux / 1e6 * N)
 
     tlist = t[n > 0] * 1.
 
+    # Add a random number to find exact time for each photon within the bin.
     tlist += N * np.random.rand(len(tlist))
     return tlist
