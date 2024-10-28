@@ -1,3 +1,9 @@
+"""
+Get modified Rician (MR) distributed arrival times for a given input flux. MR distributed arrival
+time statistics are applicable for off-axis stellar speckles behind an extreme AO system. For more
+details see https://doi.org/10.48550/arXiv.1906.03354 and https://doi.org/10.48550/arXiv.2209.06312
+"""
+
 import numpy as np
 from scipy import special, interpolate
 from mkid_detect.arrival_time_statistics.statistics_utils import corrsequence

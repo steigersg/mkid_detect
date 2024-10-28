@@ -1,3 +1,8 @@
+"""
+Get gamma distributed arrival times for a given input flux. Gamma distributed arrival time
+statistics are applicable for on-axis sources behind an extreme AO system. For more details see
+https://doi.org/10.48550/arXiv.2209.06312
+"""
 import numpy as np
 from scipy import special, interpolate, integrate
 from mkid_detect.arrival_time_statistics.statistics_utils import corrsequence
