@@ -2,7 +2,7 @@ import numpy as np
 
 
 def poisson_arrival_times(flux, exp_time, tau, taufac):
-    """Get a list of Poisson distributed arrival times
+    """Get a list of Poisson distributed arrival times.
 
     Parameters
     ----------
