@@ -2,9 +2,19 @@ import numpy as np
 
 
 def poisson_arrival_times(flux, exp_time, tau, taufac):
-    # this is the easiest thing to do (poisson), can later implement other
-    # arrival time statistics, i.e. MR
+    """Get a list of Poisson distributed arrival times
 
+    Parameters
+    ----------
+    flux
+    exp_time
+    tau
+    taufac
+
+    Returns
+    -------
+
+    """
     N = max(int(tau * 1e6 / taufac), 1)
 
     # Generate discretized time bins.
