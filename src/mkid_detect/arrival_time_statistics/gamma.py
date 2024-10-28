@@ -5,6 +5,30 @@ from scipy.stats import gamma
 
 
 def gamma_arrival_times(flux, exp_time, tau, taufac, mean_strehl=0.9, beta=5, alpha=30):
+    """Get the list of Gamma distributed arrival times.
+
+    Parameters
+    ----------
+    flux: float
+        Input flux in photons/s.
+    exp_time: float
+        Exposure time in s.
+    tau: float
+        Decorrelation timescale (s).
+    taufac: float
+        Bin fraction for dicretization (us).
+    mean_strehl: float
+        Median Strehl ratio over the exposure.
+    beta: float
+        Beta factor that defines the Gamma distribution.
+    alpha: float
+        Alpha factor that defines the Gamma distribution.
+
+    Returns
+    -------
+    tlist: list
+        Photon arrival times following Gamma statistics with decorrelation time tau.
+    """
 
     N = max(int(tau * 1e6 / taufac), 1)
 
@@ -22,35 +46,31 @@ def gamma_arrival_times(flux, exp_time, tau, taufac, mean_strehl=0.9, beta=5, al
     return tlist
 
 
-def p_I(I, k=None, theta=None, mu=None, I_peak=None):
-    """
-    Gamma intensity distribution
-    :param I:
-    :param k:
-    :param theta:
-    :param mu:
-    :param I_peak:
-    :return:
-    """
-    p = (((-np.log(I / I_peak) - mu) / theta) ** (k - 1) * np.exp((np.log(I / I_peak) + mu) / theta)) / (
-            special.gamma(k) * theta * I)
-    return p
-
-
 def p_A(x, gam=None, bet=None, alph=None):
+    """Define the Gamma PDF"""
     pdf = gamma.pdf(x, alph, loc=gam, scale=1 / bet)
     return pdf
 
 
 def gamma_icdf(median_strehl, Ip, bet=None, alph=None, interpmethod='cubic'):
     """
-    :param sr: MEDIAN value of the strehl ratio
-    :param Ip:
-    :param gam:
-    :param bet:
-    :param alph:
-    :param interpmethod:
-    :return:
+
+    Parameters
+    ----------
+    median_strehl: float
+    Ip: float
+        Intensity components that follows the Gamma distributed arrival times.
+    bet: float
+        Beta factor that defines the Gamma distribution.
+    alph: float
+        Alpha factor that defines the Gamma distribution.
+    interpmethod: str
+        Interpolation method to pass to interpolate.interp1d.
+
+    Returns
+    -------
+    func:
+        interpolation function f for the inverse CDF of the Gamma function.
     """
     # compute mean and variance of gamma distribution
     sr1 = 0.1  # max(0, mu - 15 * sig)
