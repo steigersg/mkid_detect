@@ -7,6 +7,8 @@ from mkid_detect.cosmic_rays import cosmic_rays
 from mkid_detect.photon_list import PhotonList
 from mkid_detect.logger import logger
 from mkid_detect.arrival_time_statistics.poisson import poisson_arrival_times
+from mkid_detect.arrival_time_statistics.modified_rician import mr_arrival_times
+from mkid_detect.arrival_time_statistics.gamma import gamma_arrival_times
 from tqdm import tqdm
 
 
