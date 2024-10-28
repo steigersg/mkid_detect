@@ -194,10 +194,10 @@ class MKIDDetect:
                                  f"not match the specified wavelengths ({wavelengths})")
 
         if self.dead_pixel_mask is None:
-            self.dead_pixel_mask = np.zeros_like(fluxmap[0])
+            self.dead_pixel_mask = np.zeros_like(fluxmap[0], dtype=bool)
 
         if self.hot_pixel_mask is None:
-            self.hot_pixel_mask = np.zeros_like(fluxmap[0])
+            self.hot_pixel_mask = np.zeros_like(fluxmap[0], dtype=bool)
 
         for flux in fluxmap:
             flux *= ~self.dead_pixel_mask
