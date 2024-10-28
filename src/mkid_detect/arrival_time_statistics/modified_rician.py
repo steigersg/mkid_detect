@@ -4,20 +4,26 @@ from mkid_detect.arrival_time_statistics.statistics_utils import corrsequence
 
 
 def mr_arrival_times(Ic, Is, exp_time, tau, taufac):
-    """
+    """Get the list of MR distributed arrival times.
 
     Parameters
     ----------
-    Ic
-    Is
-    exp_time
-    tau
-    taufac
-
+    Ic: float
+        Ic (coherent intensity) value.
+    Is: float
+        Is (time-varying intensity) value.
+    exp_time: float
+        Exposure time to use (s).
+    tau: float
+        Decorrelation timescale (s).
+    taufac: float
+        Bin fraction for dicretization (us).
     Returns
     -------
-
+    tlist: list
+        Photon arrival times following MR statistics with decorrelation time tau.
     """
+
     N = max(int(tau * 1e6 / taufac), 1)
 
     t, normal = corrsequence(int(exp_time * 1e6 / N), tau * 1e6 / N)
@@ -33,20 +39,21 @@ def mr_arrival_times(Ic, Is, exp_time, tau, taufac):
 
 
 def mr_icdf(Ic, Is, interpmethod='cubic'):
-    """
-    Compute an interpolation function to give the inverse CDF of the
-    modified Rician with a given Ic and Is.
+    """Get the inverse CDF of the modified Rician.
 
-    Arguments:
-    Ic: float, parameter for M-R
-    Is: float > 0, parameter for M-R
+    Parameters
+    ----------
+    Ic: float
+        Ic (coherent intensity) value.
+    Is: float
+        Is (time-varying intensity) value.
+    interpmethod: str
+        Interpolation method to use for interpolate.interp1d.
 
-    Optional argument:
-    interpmethod: keyword passed as 'kind' to interpolate.interp1d
-
-    Returns:
-    interpolation function f for the inverse CDF of the M-R
-
+    Returns
+    -------
+    func:
+        interpolation function f for the inverse CDF of the MR.
     """
 
     if Is <= 0 or Ic < 0:
@@ -93,6 +100,6 @@ def mr_icdf(Ic, Is, interpmethod='cubic'):
 
 
 def modified_rician(I, Ic, Is):
-    """Define a modified Rician. """
+    """Define a modified Rician function."""
     mr = 1. / Is * np.exp((2 * np.sqrt(I * Ic) - (Ic + I)) / Is) * special.ive(0, 2 * np.sqrt(I * Ic) / Is)
     return mr
