@@ -6,14 +6,19 @@ def poisson_arrival_times(flux, exp_time, tau, taufac):
 
     Parameters
     ----------
-    flux
-    exp_time
-    tau
-    taufac
+    flux: float
+        Input flux in photons/s.
+    exp_time: float
+        Exposure time in s.
+    tau: float
+        Decorrelation timescale (s).
+    taufac: float
+        Bin fraction for dicretization (us).
 
     Returns
     -------
-
+    tlist: list
+        Photon arrival times following Poisson statistics with decorrelation time tau.
     """
     N = max(int(tau * 1e6 / taufac), 1)
 
