@@ -75,10 +75,13 @@ class MKIDDetect:
 
         Parameters
         ----------
-        flux: float
-            Expected flux in the given pixel (counts/s)
+        flux: float or tuple
+            Expected flux in the given pixel (counts/s). If tuple the first element contains the
+            coherent intensity and the second contains the incoherent.
         exp_time: float
             Total duration of the observation.
+        statistics: str
+            Which arrival time statistics to use. Options are "poisson".
 
         Returns
         -------
@@ -87,13 +90,14 @@ class MKIDDetect:
         """
         if statistics == "poisson":
             tlist = poisson_arrival_times(flux, exp_time, self.tau, self.taufac)
+        elif statistics == "mr":
+            Ic, Is = flux
+            tlist = mr_arrival_times(Ic, Is, exp_time, self.tau, self.taufac)
+        elif statistics == "gamma":
+            tlist = gamma_arrival_times(flux, exp_time, self.tau, self.taufac)
         else:
-            raise NotImplementedError("Only Poisson arrival time statistics are currently supported")
-
-        # Remove photons that arrive too close to the preceding photon.
-        keep_times = remove_deadtime(tlist, dead_time=self.dead_time)
-
-        return keep_times
+            raise NotImplementedError(f"{statistics} statistics not currently supported.")
+        return tlist
 
     def estimate_table_size(self, exp_time, fluxmap):
         """Estimate size of HDF5 file from expected number of photons."""
