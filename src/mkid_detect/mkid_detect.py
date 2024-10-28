@@ -320,10 +320,10 @@ class MKIDDetect:
 
         for i, flux in enumerate(fluxmap):
             flux *= ~self.dead_pixel_mask
-            flux[self.hot_pixel_mask] = self.sat_rate
             flux *= self.QE
-
+            flux[self.hot_pixel_mask] = self.sat_rate
             flux *= exp_time
+
             flux += self.dark_photon_rate * exp_time
 
             # Add one photon per pixel per cosmic ray hit.
