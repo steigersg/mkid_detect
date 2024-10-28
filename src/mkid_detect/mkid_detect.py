@@ -335,6 +335,9 @@ class MKIDDetect:
             # Finally, add Poisson noise.
             images[i] = large_poisson(flux)
 
+            # Confirm we aren't higher than the saturation rate
+            images[i][images[i] > self.sat_rate * exp_time] = self.sat_rate * exp_time
+
         return images
 
 
