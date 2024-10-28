@@ -181,7 +181,7 @@ class PhotonList:
         """
         x_dim = np.max(self.get_column('x'))
         y_dim = np.max(self.get_column('y'))
-        image = np.zeros((x_dim, y_dim))
+        image = np.zeros((x_dim + 1, y_dim + 1))
 
         logger.info(f"Querying photons with condition: {start_wvl} < wvl < {stop_wvl} & {start_time} < time < {stop_time}")
         with tqdm(total=x_dim*y_dim) as pbar:
